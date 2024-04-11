@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <TodoInput @change-list="changeList" />
+    <TodoInput @create-task="handleItemCreate" @change-list="changeList" />
     <TodoList :todoes="tasks" />
   </div>
 </template>
@@ -21,8 +21,19 @@ const activeTasks = ref<Array<task>>([
   new task(5, 'Todo5'),
   new task(6, 'Todo6')
 ]);
-const deletedTasks = ref<Array<task>>([]);
-const completedTasks = ref<Array<task>>([]);
+
+const completedTasks = ref<Array<task>>([
+  new task(1, 'Todo1', true),
+  new task(2, 'Todo2', true),
+  new task(3, 'Todo3', true),
+]);
+
+const deletedTasks = ref<Array<task>>([
+  new task(1, 'Todo1', false, true),
+  new task(2, 'Todo2', false, true),
+  new task(3, 'Todo3', false, true),
+  new task(4, 'Todo4', false, true),
+]);
 
 const tasks = computed(() => {
   switch (currentList.value) {
@@ -34,6 +45,10 @@ const tasks = computed(() => {
       return activeTasks.value;
   }
 });
+
+function handleItemCreate(value: string) {
+  activeTasks.value.push(new task(activeTasks.value.length + 1, value));
+}
 
 function changeList(value: string) {
   currentList.value = value;

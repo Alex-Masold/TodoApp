@@ -23,7 +23,7 @@ const options = ref<Array<option>>([
 
 const emit = defineEmits(['create-task', 'change-list']);
 
-const selectedList = ref<string>('');
+const selectedList = ref<string>('active');
 const taskTitle = ref<string>('');
 
 function handleCreateTask() {

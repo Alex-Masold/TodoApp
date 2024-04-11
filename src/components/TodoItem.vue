@@ -7,8 +7,8 @@
     <CustomTextarea class="edit" v-else v-focus v-model="modelValue" @click.stop="handleEditTodo" />
     <div class="button-container">
       <CustomButton @click="handleDeleteTodo"> Delete </CustomButton>
-      <CustomButton v-show="!props.isDeleted" @click="handleEditTodo"> Edit </CustomButton>
-      <CustomButton v-show="props.isDeleted"> Restore </CustomButton>
+      <CustomButton v-show="!props.todo.isDeleted && !props.todo.isCompleted" @click="handleEditTodo"> Edit </CustomButton>
+      <CustomButton v-show="props.todo.isDeleted"> Restore </CustomButton>
     </div>
   </div>
 </template>
@@ -23,10 +23,6 @@ const props = defineProps({
   todo: {
     type: task,
     required: true
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false
   }
 });
 
@@ -37,11 +33,13 @@ const modelValue = defineModel<string>();
 const emit = defineEmits(['delete-todo', 'complete-todo', 'restore-todo']); // вообще надо покумекать над computed
 
 function handleDeleteTodo() {
-  emit('delete-todo', props.todo.id, props.isDeleted); // если isDeleted = true, то мягко удаляет, если isDeleted = false, то немягко удаляет
+  emit('delete-todo', props.todo); // если isDeleted = true, то мягко удаляет, если isDeleted = false, то немягко удаляет
 }
 
 function handleEditTodo() {
-  isEdit.value = !isEdit.value;
+  if (props.todo.isDeleted === false && props.todo.isCompleted === false){
+    isEdit.value = !isEdit.value;
+  }
 }
 </script>
 

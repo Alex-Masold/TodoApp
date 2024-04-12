@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <TodoInput @create-task="handleItemCreate" @change-list="changeList" />
-    <TodoList :todoes="tasks" />
+    <TodoList :todoes="tasks" @delete-todo="handleItemDelete" @complete-todo="handleItemComplete"/>
   </div>
 </template>
 
@@ -22,18 +22,9 @@ const activeTasks = ref<Array<task>>([
   new task(6, 'Todo6')
 ]);
 
-const completedTasks = ref<Array<task>>([
-  new task(1, 'Todo1', true),
-  new task(2, 'Todo2', true),
-  new task(3, 'Todo3', true),
-]);
+const completedTasks = ref<Array<task>>([]);
 
-const deletedTasks = ref<Array<task>>([
-  new task(1, 'Todo1', false, true),
-  new task(2, 'Todo2', false, true),
-  new task(3, 'Todo3', false, true),
-  new task(4, 'Todo4', false, true),
-]);
+const deletedTasks = ref<Array<task>>([]);
 
 const tasks = computed(() => {
   switch (currentList.value) {
@@ -47,7 +38,17 @@ const tasks = computed(() => {
 });
 
 function handleItemCreate(value: string) {
-  activeTasks.value.push(new task(activeTasks.value.length + 1, value));
+  activeTasks.value.push(new task(activeTasks.value.length + deletedTasks.value.length + completedTasks.value.length + 1 , value));
+}
+
+function handleItemDelete(id: number) {
+  deletedTasks.value.push(activeTasks.value.find(item => item.id === id) as task);
+  activeTasks.value = activeTasks.value.filter(item => item.id !== id);
+}
+
+function handleItemComplete(id: number) {
+  completedTasks.value.push(activeTasks.value.find(item => item.id === id) as task);
+  activeTasks.value = activeTasks.value.filter(item => item.id !== id);
 }
 
 function changeList(value: string) {

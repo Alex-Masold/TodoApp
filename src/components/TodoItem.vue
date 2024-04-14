@@ -1,14 +1,27 @@
 <template>
   <div class="todo-item">
     <span> {{ props.todo.id }} </span>
-    <div :class="{ completed: isCompleted }" type="text" v-if="!isEdit"  @click="handleCompleteTodo" @dblclick="handleEditTodo">
+    <div
+      :class="{ completed: props.todo.isCompleted }"
+      type="text"
+      v-if="!isEdit"
+      @click="handleCompleteTask"
+      @dblclick="handleEditTask">
       {{ props.todo.title }}
     </div>
-    <CustomTextarea class="edit" v-else v-focus v-model="modelValue" @click.stop="handleEditTodo" />
+    <CustomTextarea class="edit" v-else v-focus v-model="modelValue" @click.stop="handleEditTask" />
     <div class="button-container">
-      <CustomButton @click="handleDeleteTodo"> Delete </CustomButton>
-      <CustomButton v-show="!props.isDeleted && !isCompleted" @click="handleEditTodo"> Edit </CustomButton>
-      <CustomButton v-show="props.isDeleted"> Restore </CustomButton>
+      <CustomButton v-show="!props.todo.isCompleted" @click="handleDeleteTask">
+        Delete
+      </CustomButton>
+      <CustomButton
+        v-show="!props.todo.isDeleted && !props.todo.isCompleted"
+        @click="handleEditTask">
+        Edit
+      </CustomButton>
+      <CustomButton v-show="props.todo.isDeleted" @click="handelRestoreTask">
+        Restore
+      </CustomButton>
     </div>
   </div>
 </template>
@@ -23,37 +36,36 @@ const props = defineProps({
   todo: {
     type: task,
     required: true
-  },
-  isDeleted: {
-    type: Boolean
   }
 });
-
-const isCompleted = ref<boolean>(false);
 
 const isEdit = ref<boolean>(false);
 
 const modelValue = defineModel<string>();
 
-const emit = defineEmits(['delete-todo', 'complete-todo', 'restore-todo']); // вообще надо покумекать над computed
+const emit = defineEmits(['delete-task', 'complete-task', 'restore-task']); // вообще надо покумекать над computed
 
-function handleDeleteTodo() {
-  emit('delete-todo', props.todo.id); // если isDeleted = true, то мягко удаляет, если isDeleted = false, то немягко удаляет
+function handleDeleteTask() {
+  emit('delete-task', props.todo.id); // если isDeleted = false, то мягко удаляет, если isDeleted = true, то немягко удаляет
 }
 
-function handleCompleteTodo() {
-  if (props.isDeleted === false && isCompleted.value === false) {
-    isCompleted.value = !isCompleted.value;
-    emit('complete-todo', props.todo.id);
+function handleCompleteTask() {
+  if (props.todo.isDeleted === false && props.todo.isCompleted === false) {
+    emit('complete-task', props.todo.id);
   }
 }
 
-function handleEditTodo() {
-  if (props.isDeleted === false && isCompleted.value === false){
+function handelRestoreTask() {
+  if (props.todo.isDeleted === true) {
+    emit('restore-task', props.todo.id);
+  }
+}
+
+function handleEditTask() {
+  if (props.todo.isDeleted === false && props.todo.isCompleted === false) {
     isEdit.value = !isEdit.value;
   }
 }
-
 </script>
 
 <style scoped>

@@ -1,7 +1,10 @@
 <template>
   <div class="wrapper">
-    <TodoInput @create-task="handleItemCreate" @change-list="changeList" />
-    <TodoList :todoes="tasks" @delete-todo="handleItemDelete" @complete-todo="handleItemComplete"/>
+    <TodoInput @create-task="handleTaskCreate" @change-list="changeList" />
+    <TodoList :todoes="tasks" 
+      @delete-task="handleTaskDelete" 
+      @complete-task="handleTaskComplete"
+      @restore-task="handleTaskRestore"/>
   </div>
 </template>
 
@@ -37,30 +40,63 @@ const tasks = computed(() => {
   }
 });
 
-function handleItemCreate(value: string) {
-  activeTasks.value.push(new task(activeTasks.value.length + deletedTasks.value.length + completedTasks.value.length + 1 , value));
-}
-
-function handleItemDelete(id: number) {
-  deletedTasks.value.push(activeTasks.value.find(item => item.id === id) as task);
-  activeTasks.value = activeTasks.value.filter(item => item.id !== id);
-}
-
-function handleItemComplete(id: number) {
-  completedTasks.value.push(activeTasks.value.find(item => item.id === id) as task);
-  activeTasks.value = activeTasks.value.filter(item => item.id !== id);
-}
-
 function changeList(value: string) {
   currentList.value = value;
 }
+
+function handleTaskCreate(value: string) {
+  activeTasks.value.push(new task(activeTasks.value.length + deletedTasks.value.length + completedTasks.value.length + 1 , value));
+}
+
+function handleTaskDelete(id: number) {
+  let task: task = tasks.value.find(item => item.id === id) as task;
+  //console.log(task.isDeleted);
+  if(task.isDeleted === false) {
+    task.isDeleted = true;
+    deletedTasks.value.push(task);
+    activeTasks.value = activeTasks.value.filter(item => item.id !== id);
+  } else {
+    deletedTasks.value = deletedTasks.value.filter(item => item.id !== id);
+  }
+} 
+
+function handleTaskComplete(id: number) {
+  let task: task = activeTasks.value.find(item => item.id === id) as task;
+  //console.log(task.isCompleted);
+  if(task.isCompleted === false) {
+    task.isCompleted = true;
+    completedTasks.value.push(task);
+    activeTasks.value = activeTasks.value.filter(item => item.id !== id);
+  }
+}
+
+function handleTaskRestore(id: number){
+  let task: task = deletedTasks.value.find(item => item.id === id) as task;
+  //console.log(task.isDeleted);
+  if(task.isDeleted === true) {
+    task.isDeleted = false;
+    activeTasks.value.push(task);
+    deletedTasks.value = deletedTasks.value.filter(item => item.id !== id);
+  }
+}
+
 
 </script>
 
 <style scoped>
 .wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  min-width: 400px;
+  background: #222;
+  margin-right: 1rem;
+  margin-left: 1rem;
+  padding: 1.5em 2em;
+  overflow: hidden;
+  border-radius: 30px;
+  border: 3px solid teal;
+  font-family: 'Roboto', sans-serif;
+  transition: 0.5s ease-out;
 }
 </style>

@@ -1,11 +1,13 @@
 <template>
   <div>
-    <TodoItem v-for="todo in props.todoes" 
-        :key="todo.id" 
-        :todo="todo"
-        v-model="todo.title"
-        @delete-todo="handleDeleteTodo"
-        @complete-todo="handleCompleteTodo"/>
+    <TodoItem
+      v-for="todo in props.todoes"
+      :key="todo.id"
+      :todo="todo"
+      v-model="todo.title"
+      @delete-task="handleDeleteTodo"
+      @complete-task="handleCompleteTodo" 
+      @restore-task="handleRestoreTodo"/>
   </div>
 </template>
 
@@ -13,26 +15,25 @@
 import { task } from '../models/Task';
 import TodoItem from './TodoItem.vue';
 
-const emit = defineEmits(['delete-todo', 'complete-todo']);
+const emit = defineEmits(['delete-task', 'complete-task', 'restore-task']);
 
 function handleDeleteTodo(id: string) {
-    emit('delete-todo', id);
+  emit('delete-task', id);
 }
 
 function handleCompleteTodo(id: string) {
-    emit('complete-todo', id);
+  emit('complete-task', id);
 }
 
+function handleRestoreTodo(id: string) {
+  emit('restore-task', id);
+}
 const props = defineProps({
-    todoes:{
-        type: Array<task>,
-        required: true,
-    }
-})
-
-
+  todoes: {
+    type: Array<task>,
+    required: true
+  }
+});
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
